@@ -6,7 +6,9 @@ import Grid from '@mui/material/Grid';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import Badge from '@mui/material/Badge';
 import { LinearProgress } from "@mui/material";
-import Item from "./components/item/Item"
+import IconButton from '@mui/material/IconButton';
+import Item from "./components/item/Item";
+import Cart from "./components/cart/Cart";
 
 export type CartItemType = {
   id: number;
@@ -24,9 +26,12 @@ const getProducts = async (): Promise<CartItemType[]> =>
 
 const App = () => {
 
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([] as CartItemType[]);
   const { data, isLoading, error } = useQuery<CartItemType[]>("product", getProducts);
 
-  const getTotalItems = () => null;
+  const getTotalItems = (items: CartItemType[]) =>
+    items.reduce((ack: number, item) => ack + item.quantity, 0);
 
   const handleAddToCart = (clickedItem: CartItemType) => null;
 
@@ -37,7 +42,19 @@ const App = () => {
 
 
   return (
-    <div className="App">
+    <div className="app">
+      <Drawer anchor='right' open={cartOpen} onClose={() => setCartOpen(false)}> 
+        <Cart
+          cartItems={cartItems}
+          addToCart={handleAddToCart}
+          removeFromCart={handleRemoveFromCart}
+        />
+      </Drawer>
+      <IconButton className="btn-icon" onClick={() => setCartOpen(true)}>
+        <Badge badgeContent={getTotalItems(cartItems)} color="error">
+          <AddShoppingCartIcon />
+        </Badge>
+      </IconButton>
       <Grid container spacing={3}>
         {data?.map(item => (
           <Grid item key={item.id} xs={12} sm={4}>
