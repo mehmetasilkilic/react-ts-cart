@@ -1,0 +1,21 @@
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid $itemBorder;
+    padding-bottom: 20px;
+
+    .cart-item-wrapper {
+        flex: 1;
+
+        .cart-item-information, .cart-item-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
+    img {
+        max-width: 80px;
+        object-fit: cover;
+        margin-left: 40px;
+    }
+}

@@ -33,9 +33,35 @@ const App = () => {
   const getTotalItems = (items: CartItemType[]) =>
     items.reduce((ack: number, item) => ack + item.quantity, 0);
 
-  const handleAddToCart = (clickedItem: CartItemType) => null;
+  const handleAddToCart = (clickedItem: CartItemType) => {
+    setCartItems(prev => {
+      // If the item already in the cart
+      const isItemInCart = prev.find(item => item.id === clickedItem.id)
 
-  const handleRemoveFromCart = () => null;
+      if (isItemInCart) {
+        return prev.map(item =>
+          item.id === clickedItem.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      // First time the item is added
+      return [...prev, { ...clickedItem, quantity: 1 }]
+    });
+  };
+
+  const handleRemoveFromCart = (id: number) => {
+    setCartItems(prev =>
+      prev.reduce((ack, item) => {
+        if (item.id === id) {
+          if (item.quantity === 1) return ack;
+          return [...ack, { ...item, quantity: item.quantity - 1 }]
+        } else {
+          return [...ack, item]
+        }
+      }, [] as CartItemType[])
+    );
+  };
 
   if (isLoading) return <LinearProgress />
   if (error) return <div className="error">Something went wrong</div>
@@ -43,7 +69,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <Drawer anchor='right' open={cartOpen} onClose={() => setCartOpen(false)}> 
+      <Drawer anchor='right' open={cartOpen} onClose={() => setCartOpen(false)}>
         <Cart
           cartItems={cartItems}
           addToCart={handleAddToCart}
